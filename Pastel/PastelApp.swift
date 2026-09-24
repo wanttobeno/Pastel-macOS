@@ -5976,12 +5976,21 @@ struct FileActionsBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            FileActionButton(systemImage: "finder", tint: .secondary, size: 14.5, help: String(localized: "在访达中显示"), action: onReveal)
+            FileActionButton(systemImage: revealIconName, tint: .secondary, size: 14.5, help: String(localized: "在访达中显示"), action: onReveal)
             FileActionButton(systemImage: "square.and.arrow.up", tint: Color.accentColor, size: 13, yOffset: -1, help: String(localized: "通过 AirDrop 发送"), action: onAirDrop)
             FileActionButton(systemImage: "trash", tint: .red, size: 13.5, help: String(localized: "删除本地文件"), action: onDelete)
         }
         .padding(2)
         .glassEffect(.regular, in: Capsule())
+    }
+
+    /// "finder" was added in SF Symbols 7 (macOS 26). Fall back to a
+    /// universally available symbol on earlier systems.
+    private var revealIconName: String {
+        if #available(macOS 26.0, *) {
+            return "finder"
+        }
+        return "folder"
     }
 }
 
