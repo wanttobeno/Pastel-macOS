@@ -847,10 +847,41 @@ struct SettingsWindowConfigurator: NSViewRepresentable {
 
     private func configure(_ window: NSWindow?) {
         guard let window else { return }
+        SettingsWindowManager.register(window)
         window.styleMask.insert(.fullSizeContentView)
         window.titlebarAppearsTransparent = false
         window.titleVisibility = .hidden
         window.toolbarStyle = .unified
+    }
+}
+
+/// The macOS 26 `Window` scene is single-instance per id, but the macOS 14
+/// fallback uses a multi-window `WindowGroup`. This manager restores the
+/// single settings window behavior: reuse an existing settings window
+/// instead of opening another one.
+@MainActor
+private enum SettingsWindowManager {
+    private static weak var settingsWindow: NSWindow?
+
+    static func register(_ window: NSWindow) {
+        settingsWindow = window
+    }
+
+    /// Brings the existing settings window to the front when one is still
+    /// open; returns true when it reused the window, false if the caller
+    /// should open a new one.
+    @discardableResult
+    static func presentExisting() -> Bool {
+        guard let window = settingsWindow, window.isVisible || window.isMiniaturized else {
+            settingsWindow = nil
+            return false
+        }
+        if window.isMiniaturized {
+            window.deminiaturize(nil)
+        }
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        return true
     }
 }
 
@@ -2376,7 +2407,9 @@ struct ContentView: View {
     }
 
     private func showSettings() {
-        openWindow(id: "settings")
+        if !SettingsWindowManager.presentExisting() {
+            openWindow(id: "settings")
+        }
     }
 
     private func showRelogin() {
@@ -7466,7 +7499,9 @@ struct PastelSettingsCommands: Commands {
     var body: some Commands {
         CommandGroup(replacing: .appSettings) {
             Button(String(localized: "设置…")) {
-                openWindow(id: "settings")
+                if !SettingsWindowManager.presentExisting() {
+                    openWindow(id: "settings")
+                }
             }
             .keyboardShortcut(",", modifiers: .command)
         }
