@@ -2967,7 +2967,7 @@ struct ContentView: View {
                             } label: {
                                 Text(String(localized: "前往 Apple 来源获取"))
                             }
-                            .buttonStyle(.glassProminent)
+                            .buttonStyle(GlassProminentButtonStyle())
                             .controlSize(.large)
                             .disabled(catalog.isLoadingVersions)
                         }
@@ -2989,7 +2989,7 @@ struct ContentView: View {
                                 } label: {
                                     Text(String(localized: "获取"))
                                 }
-                                .buttonStyle(.glassProminent)
+                                .buttonStyle(GlassProminentButtonStyle())
                                 .controlSize(.large)
                                 .disabled(catalog.isLoadingVersions)
                             } else {
@@ -3005,7 +3005,7 @@ struct ContentView: View {
                                 } label: {
                                     Label(String(localized: "查询历史版本"), systemImage: "arrow.clockwise")
                                 }
-                                .buttonStyle(.glassProminent)
+                                .buttonStyle(GlassProminentButtonStyle())
                                 .controlSize(.large)
                                 .disabled(catalog.isLoadingVersions)
                             }
@@ -3544,7 +3544,7 @@ struct ContentView: View {
                 } label: {
                     Label(String(localized: "刷新"), systemImage: "arrow.clockwise")
                 }
-                .buttonStyle(.glass)
+                .buttonStyle(GlassButtonStyle())
                 .controlSize(.large)
                 .disabled(activeAppID.isEmpty || catalog.isLoadingVersions)
             }
@@ -3567,7 +3567,7 @@ struct ContentView: View {
                     } label: {
                         Label(String(localized: "查询历史版本"), systemImage: "clock.arrow.circlepath")
                     }
-                    .buttonStyle(.glassProminent)
+                    .buttonStyle(GlassProminentButtonStyle())
                     .controlSize(.large)
                     .disabled(catalog.isLoadingVersions)
                 }
@@ -4309,7 +4309,7 @@ struct ContentView: View {
                 Label(String(localized: "搜索"), systemImage: "magnifyingglass")
             }
             .controlSize(.large)
-            .buttonStyle(.glass)
+            .buttonStyle(GlassButtonStyle())
             .disabled(catalog.isSearching)
         case .versions:
             Button {
@@ -4318,7 +4318,7 @@ struct ContentView: View {
                 Label(String(localized: "查询"), systemImage: "clock.arrow.circlepath")
             }
             .controlSize(.large)
-            .buttonStyle(.glass)
+            .buttonStyle(GlassButtonStyle())
             .disabled(catalog.isLoadingVersions)
         case .download:
             Button {
@@ -4327,7 +4327,7 @@ struct ContentView: View {
                 Label(String(localized: "开始下载"), systemImage: "play.fill")
             }
             .controlSize(.large)
-            .buttonStyle(.glassProminent)
+            .buttonStyle(GlassProminentButtonStyle())
             .disabled((selectedDownloadJobID().map { downloads.isRunning($0) } ?? false) || activeAppID.isEmpty || versionFeature.selectedVersion == nil)
         case .logs:
             Button {
@@ -4336,7 +4336,7 @@ struct ContentView: View {
                 Label(String(localized: "清空"), systemImage: "trash")
             }
             .controlSize(.large)
-            .buttonStyle(.glass)
+            .buttonStyle(GlassButtonStyle())
             .disabled(activeLog.isEmpty || anyRunning)
         }
     }
@@ -6225,7 +6225,7 @@ private struct SidebarControlButtonStyleModifier: ViewModifier {
 private struct SidebarActionButtonStyleModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .buttonStyle(.glass)
+            .buttonStyle(GlassButtonStyle())
             .controlSize(.large)
             .font(.body)
     }
@@ -7485,6 +7485,26 @@ struct PastelApp: App {
     }
 
     var body: some Scene {
+        #if MACOS_DEPLOYMENT_TARGET_14
+        WindowGroup {
+            ContentView()
+                .environment(accountStore)
+                .environment(updateManager)
+        }
+        .commands {
+            PastelSettingsCommands(updateManager: updateManager)
+        }
+
+        WindowGroup(String(localized: "设置"), id: "settings") {
+            SettingsRootView()
+                .environment(accountStore)
+                .environment(updateManager)
+                .frame(minWidth: 860, minHeight: 560)
+        }
+        .windowStyle(.hiddenTitleBar)
+        .defaultSize(width: 920, height: 620)
+        .windowResizability(.contentMinSize)
+        #else
         Window(appDisplayName, id: "main") {
             ContentView()
                 .environment(accountStore)
@@ -7509,5 +7529,6 @@ struct PastelApp: App {
         .windowResizability(.contentMinSize)
         .defaultLaunchBehavior(.suppressed)
         .restorationBehavior(.disabled)
+        #endif
     }
 }
