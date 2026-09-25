@@ -6,8 +6,8 @@
   <p>搜索 App、查找历史版本，并将 IPA 轻松传输到 iPhone 或 iPad。</p>
 
   <p>
-    <img src="https://img.shields.io/badge/version-20260831-0A84FF?style=flat-square" alt="Version 20260831">
-    <img src="https://img.shields.io/badge/macOS-26%2B-111111?style=flat-square&logo=apple" alt="macOS 26 or later">
+    <img src="https://img.shields.io/badge/version-20260924-0A84FF?style=flat-square" alt="Version 20260924">
+    <img src="https://img.shields.io/badge/macOS-14%2B-111111?style=flat-square&logo=apple" alt="macOS 14 or later">
     <img src="https://img.shields.io/badge/Apple%20Silicon-required-111111?style=flat-square&logo=apple" alt="Apple Silicon required">
     <img src="https://img.shields.io/badge/license-Apache--2.0-6B7280?style=flat-square" alt="Apache 2.0 License">
   </p>
@@ -86,7 +86,7 @@ Pastel 聚合 Timbrd、Agsy 与 Bilin 的版本 ID 信息，也可以直接从 A
 
 | 项目 | 要求 |
 | --- | --- |
-| 操作系统 | macOS 26 或更高版本 |
+| 操作系统 | macOS 14 或更高版本 |
 | 处理器 | Apple Silicon |
 | 运行环境 | 真实 Mac，不支持虚拟机 |
 | 网络 | 需要能够访问 Apple 服务；网络不稳定时建议使用代理 |
